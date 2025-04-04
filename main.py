@@ -57,7 +57,6 @@ if __name__ == "__main__":
             frame_read = drone.tello.get_frame_read()
             frame = frame_read.frame
             cv2.imshow("Tello Video", frame)
-            cv2.waitKey(1)
             key = get_key().lower()
 
             match key:
