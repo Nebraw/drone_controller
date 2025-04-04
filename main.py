@@ -39,20 +39,11 @@ else:  # Linux/macOS
         return key.lower()
 
 if __name__ == "__main__":
-    moveToMirrorAction = {
-        "move_forward" : "move_back",
-        "move_back" : "move_forward" ,
-        "move_right" : "move_left",
-        "move_left" : "move_right",
-        "move_up" : "move_down",
-        "move_down" : "move_up",
-        "rotate_ccw" : "rotate_cw",
-        "rotate_cw" : "rotate_cw",
-    }
     drone = DroneController()
     agent = DroneAgent(drone.tello)
 
     drone.connect()
+    drone.streamCamera()
 
     print("Mode autonome activé !")       
     try:
@@ -86,10 +77,7 @@ if __name__ == "__main__":
                     print("end program.")
                     break
                 case "b":
-                    while agent.hasLastAction():
-                        lastAction = agent.get_mirror_move_of_last_position()
-                        agent.execute_action(moveToMirrorAction[lastAction])
-
+                    agent.execute_action("battery")
                 case _: 
                     print("Unknow", key)
     finally:

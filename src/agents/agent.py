@@ -6,7 +6,6 @@ class DroneAgent:
     def __init__(self, tello:Tello):
         self.tello:Tello = tello
         self.model = MLModel()
-        self.pastactions = deque()
 
 
     def analyze_frame(self,frame=None):
@@ -18,8 +17,6 @@ class DroneAgent:
     def execute_action(self, action, value=None, isMirror = False):
         """Exécute une action sur le drone en fonction de la prédiction du modèle"""
         try:
-            print(f"Executing action  {action} mirror : {isMirror}")
-            
             match action:
                 case "takeoff":
                     self.tello.takeoff() 
@@ -47,23 +44,7 @@ class DroneAgent:
                     print(f"Speed: {self.tello.get_speed()} cm/s")
                 case _:
                     print(f"Action unknown: {action}")
-            
-            if not isMirror:
-                self.pastactions.append(action)
-        
+    
         except Exception as e:
-            print(f"Failed to execute {action}: {e}")
-    
-    def hasLastAction(self):
-        return len(self.pastactions) > 0
-        
-    
-    def get_mirror_move_of_last_position(self):
-        if (len(self.pastactions) == 0):
-            print("Drone is already at initial position")
-            return None
-
-        else:
-            return self.pastactions.pop()
-        
+            print(f"Failed to execute {action}: {e}")    
             
