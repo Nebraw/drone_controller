@@ -39,25 +39,24 @@ else:  # Linux/macOS
         return key.lower()
 
 if __name__ == "__main__":
+    moveToMirrorAction = {
+        "move_forward" : "move_back",
+        "move_back" : "move_forward" ,
+        "move_right" : "move_left",
+        "move_left" : "move_right",
+        "move_up" : "move_down",
+        "move_down" : "move_up",
+        "rotate_ccw" : "rotate_cw",
+        "rotate_cw" : "rotate_cw",
+    }
     drone = DroneController()
     agent = DroneAgent(drone.tello)
 
     drone.connect()
-    drone.streamCamera()
 
-    #stop_event = threading.Event()
-    #video_thread = threading.Thread(target=startVideoStream, args=(drone.tello, stop_event))
-    #video_thread.start()
     print("Mode autonome activé !")       
     try:
         while True:
-            #frame = capture_frame(drone.tello)  # Récupère une image du drone
-            #action = agent.analyze_frame()  # Analyse et prédit une action
-            #agent.execute_action(action)  # Exécute l'action
-            frame_read = drone.tello.get_frame_read()
-            frame = frame_read.frame
-            cv2.imshow("Tello Video", frame)
-            cv2.waitKey(1)
             key = get_key().lower()
 
             match key:
@@ -77,6 +76,7 @@ if __name__ == "__main__":
                     agent.execute_action("rotate_ccw", 45)
                 case "e":
                     agent.execute_action("rotate_cw", 45)
+
                 case "t":
                     agent.execute_action("takeoff")
                 case "l":
@@ -85,10 +85,12 @@ if __name__ == "__main__":
                     drone.tello.land()
                     print("end program.")
                     break
+                case "b":
+                    while agent.hasLastAction():
+                        lastAction = agent.get_mirror_move_of_last_position()
+                        agent.execute_action(moveToMirrorAction[lastAction])
+
                 case _: 
                     print("Unknow", key)
     finally:
-        #stop_event.set()
-        #video_thread.join()
-        drone.tello.streamoff()
-        cv2.destroyAllWindows()
+        print()
