@@ -1,10 +1,12 @@
 from src.agents.model import MLModel
 from djitellopy import Tello
+from collections import deque 
 
 class DroneAgent:
     def __init__(self, tello:Tello):
         self.tello:Tello = tello
         self.model = MLModel()
+
 
     def analyze_frame(self,frame=None):
         """Analyse une image et retourne une action"""
@@ -12,12 +14,12 @@ class DroneAgent:
         print(f"Action recommandée par le modèle : {action}")
         return action
 
-    def execute_action(self, action, value=None):
+    def execute_action(self, action, value=None, isMirror = False):
         """Exécute une action sur le drone en fonction de la prédiction du modèle"""
         try:
             match action:
                 case "takeoff":
-                    self.tello.takeoff()
+                    self.tello.takeoff() 
                 case "land":
                     self.tello.land()
                 case "move_forward":
@@ -42,5 +44,7 @@ class DroneAgent:
                     print(f"Speed: {self.tello.get_speed()} cm/s")
                 case _:
                     print(f"Action unknown: {action}")
+    
         except Exception as e:
-            print(f"Failed to execute {action}: {e}")
+            print(f"Failed to execute {action}: {e}")    
+            
