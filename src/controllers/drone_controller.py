@@ -15,11 +15,12 @@ class DroneController:
         print(f"Batterie: {self.tello.get_battery()}%")
 
     @catch_exceptions
-    def streamCamera(self):
+    def streamon(self):
         print('lancement de camera')
         self.tello.streamon()
         time.sleep(2)
-    
+        print('camera lancé')
+        
     @catch_exceptions
     def getframe(self):
         return self.tello.get_frame_read()
