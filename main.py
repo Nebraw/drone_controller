@@ -1,5 +1,5 @@
 from src.controllers.drone_controller import DroneController
-from src.agents.agent import DroneAgent
+from agents.drone_agent import DroneAgent
 import sys
 import sys
 import platform
