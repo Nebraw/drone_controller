@@ -3,6 +3,18 @@ from djitellopy import Tello
 from collections import deque 
 
 class DroneAgent:
+    # Defines the action needed to be executed to cancel one move
+    moveToMirrorAction = {
+        "move_forward" : "move_back",
+        "move_back" : "move_forward" ,
+        "move_right" : "move_left",
+        "move_left" : "move_right",
+        "move_up" : "move_down",
+        "move_down" : "move_up",
+        "rotate_ccw" : "rotate_cw",
+        "rotate_cw" : "rotate_cw",
+    }
+
     def __init__(self, tello:Tello):
         self.tello:Tello = tello
         self.model = MLModel()
@@ -65,5 +77,10 @@ class DroneAgent:
 
         else:
             return self.pastactions.pop()
+    
+    def get_back_to_the_start(self):
+         while self.hasLastAction():
+            lastAction = self.get_mirror_move_of_last_position()
+            self.execute_action(self.moveToMirrorAction[lastAction]) 
         
             

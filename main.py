@@ -86,9 +86,7 @@ if __name__ == "__main__":
                     print("end program.")
                     break
                 case "b":
-                    while agent.hasLastAction():
-                        lastAction = agent.get_mirror_move_of_last_position()
-                        agent.execute_action(moveToMirrorAction[lastAction])
+                    agent.get_back_to_the_start()
 
                 case _: 
                     print("Unknow", key)
