@@ -30,7 +30,7 @@ else:  # Linux/macOS
         return key.lower()
 
 
-def test_getcommande(agent, key) -> int :
+def test_getcommande(agent:DroneController, key) -> int :
     match key:
         case "w":
             agent.execute_action("move_forward", 50)
