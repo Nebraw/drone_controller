@@ -5,9 +5,9 @@ from src.utils.error_handler import catch_exceptions
 from src.controllers.command_executor import CommandExecutor
 
 class DroneController:
-    def __init__(self):
+    def __init__(self, number_retry:int= 1):
         self.tello = Tello()
-        self.tello.retry_count = 1
+        self.tello.retry_count = number_retry
         self.executor = CommandExecutor(self.tello)
         self.backToBase = False
         self.backActions = []
@@ -16,12 +16,12 @@ class DroneController:
         self.mirror = {
             "takeoff":"land",
             "land":"takeoff",
-            "move_forward":"move_back",
-            "move_back":"move_forward",
-            "move_right":"move_left",
-            "move_left":"move_right",
-            "move_up":"move_down",
-            "move_down":"move_up",
+            "forward":"back",
+            "back":"forward",
+            "right":"left",
+            "left":"right",
+            "up":"down",
+            "down":"up",
             "rotate_cw":"rotate_ccw",
             "rotate_ccw":"rotate_cw"
         }
@@ -29,20 +29,18 @@ class DroneController:
 
     @catch_exceptions
     def connect(self):
-        print("Connexion au drone...")
+        print("Connection to the drone...")
         self.tello.connect()
-        print(f"Batterie: {self.tello.get_battery()}%")
-
+        
     def getBattery(self):
          print(f"Battery: {self.tello.get_battery()}%")
 
     @catch_exceptions
     def streamon(self):
-        print('lancement de camera')
         self.tello.streamon()
         time.sleep(2)
-        print('camera lancé')
-        
+        print('Camera Started')        
+    
     @catch_exceptions
     def getframe(self):
         return self.tello.get_frame_read()
@@ -64,42 +62,43 @@ class DroneController:
                 self.backActions.append((action, value))
 
 
-    def execute_action(self, action, value=None, backToBase=False):
-        """Exécute une action sur le drone en fonction de la prédiction du modèle"""
+    def execute_action(self, action, value=20, backToBase=False):
+        success:bool = False
         try:
             match action:
                 case "takeoff":
-                    self.tello.takeoff() 
+                    success = self.tello.send_control_command(action, timeout=Tello.TAKEOFF_TIMEOUT) 
                 case "land":
                     self.tello.land()
-                case "move_forward":
-                    self.tello.move_forward(value)
-                case "move_back":
-                    self.tello.move_back(value)
-                case "move_left":
-                    self.tello.move_left(value)
-                case "move_right":
-                    self.tello.move_right(value)
-                case "move_up":
-                    self.tello.move_up(value)
-                case "move_down":
-                    self.tello.move_down(value)
+                case "forward":
+                     success = self.tello.send_control_command("{} {}".format(action, value))
+                case "back":
+                     success = self.tello.send_control_command("{} {}".format(action, value))
+                case "left":
+                     success = self.tello.send_control_command("{} {}".format(action, value))
+                case "right":
+                     success = self.tello.send_control_command("{} {}".format(action, value))
+                case "up":
+                     success = self.tello.send_control_command("{} {}".format(action, value))
+                case "down":
+                     success = self.tello.send_control_command("{} {}".format(action, value))
                 case "rotate_cw":
-                    self.tello.rotate_clockwise(value)
+                     success = self.tello.send_control_command("cw {}".format(value))
                 case "rotate_ccw":
-                    self.tello.rotate_counter_clockwise(value)
+                     success = self.tello.send_control_command("ccw {}".format(value))
                 case "battery":
                     print(f"Battery: {self.tello.get_battery()}%")
-                case "speed":
-                    print(f"Speed: {self.tello.get_speed()} cm/s")
                 case "backToBase":
                     self.modeBackToBase()
                     return
                 case _:
                     print(f"Action unknown: {action}")
-            if not backToBase:
+            
+            print(success)
+            if success and not backToBase:
                 self.actions.append((action,value))
-                self.addAction(self.mirror[action], value)             
+                self.addAction(self.mirror[action], value)  
+
         except Exception as e:
             print(f"Failed to execute {action}: {e}")
 

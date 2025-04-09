@@ -1,5 +1,5 @@
 import cv2
-from djitellopy import Tello  # Assurez-vous que vous avez bien installé le package djitellopy
+from djitellopy import Tello
 from src.controllers.drone_controller import DroneController
 from src.agents.agent import DroneAgent
 import sys
@@ -62,30 +62,24 @@ def test_getcommande(agent:DroneController, key) -> int :
 
 
 def test_tello_video():
-    # Connexion au drone
     drone = DroneController()
     agent = DroneAgent(drone.tello)
 
     drone.connect()
     drone.streamon()
     
-    #tello.set_video_resolution(720)
-    # Vérifiez la connexion au drone
     print("Tello connected:", drone.tello.get_battery())
 
-    # Capturer et afficher le flux vidéo
     while True:
-        frame = drone.tello.get_frame_read().frame  # Lire une frame du flux
+        frame = drone.tello.get_frame_read().frame
         if frame is not None:
-            cv2.imshow("Tello Video Stream", frame)  # Afficher la frame
+            cv2.imshow("Tello Video Stream", frame)
         else:
             print("Frame vide reçue.")
-        # Sortir de la boucle en appuyant sur la touche 'q'
         if cv2.waitKey(1) & 0xFF == ord('p'):
             break
         
 
-    # Libérer les ressources
     drone.tello.streamoff()
     cv2.destroyAllWindows()
 
