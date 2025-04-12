@@ -1,6 +1,7 @@
 from agents.drone_agent import DroneAgent
 from unittest import MagicMock
 
+
 def test_past_move():
      mockTello = MagicMock(spec=Tello)
      agent = DroneAgent()
@@ -10,7 +11,7 @@ def test_past_move():
      agent.execute_action("move_up")
      agent.execute_action("rotate_cw")
 
-     
+
 
 if __name__ == "__main__":
      test_past_move()
